@@ -1,5 +1,9 @@
 const express = require('express');
 const axios = require('axios');
+const { TonClient } = require("@tonclient/core");
+const { libWeb } = require("@tonclient/lib-web");
+TonClient.useBinaryLibrary(libWeb);
+
 const app = express();
 
 app.get('/auth', (req, res) => {
@@ -32,24 +36,28 @@ app.get('/generate-url', async (req, res) => {
 
         const payload = "";
         const tonClientUrl = "https://testnet.ton.dev";
-        const tonClientConfig = { network: { server_address: tonClientUrl } };
-
-        const client = new TonClient(tonClientConfig);
-        const keypair = { public: public_key, secret: "" }; // No need for the private key
+        const client = new TonClient({ network: { server_address: tonClientUrl } });
 
         const params = {
-            abi: null,
+            abi: {
+                type: "Contract",
+                value: {
+                    functions: [],
+                    events: [],
+                    data: []
+                }
+            },
             address: address,
             call_set: {
                 function_name: "sendTransaction",
                 input: { dest: recipientAddress, value: amount, bounce: false, payload: payload }
             },
-            signer: { type: "External", public_key: keypair.public }
+            signer: { type: "None" }
         };
 
         const { message } = await client.abi.encode_message(params);
-        const { boc } = await client.boc.encode_boc({ data: message });
-        const base64Boc = Buffer.from(boc).toString('base64');
+        const { boc } = await client.boc.encode_boc({ boc: [message] });
+        const base64Boc = Buffer.from(boc[0]).toString('base64');
 
         const tonkeeperUrl = `https://app.tonkeeper.com/transfer/${recipientAddress}?amount=${amount}&bin=${base64Boc}`;
         res.redirect(tonkeeperUrl);
