@@ -1,0 +1,3 @@
+flask
+requests
+ton-client-py

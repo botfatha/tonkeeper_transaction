@@ -1,13 +1,27 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, url_for
 import base64
 from ton_client.client import TonClient, DEVNET_BASE_URL
 from ton_client.types import ParamsOfEncodeMessage, CallSet, Signer, KeyPair
 
 app = Flask(__name__)
 
-@app.route('/generate-url', methods=['GET'])
+# Route to start the authentication process
+@app.route('/auth')
+def authenticate():
+    callback_url = url_for('callback', _external=True)
+    tonkeeper_url = f'ton://connect?callback={callback_url}'
+    return redirect(tonkeeper_url)
+
+# Callback route to handle the response from Tonkeeper
+@app.route('/callback')
+def callback():
+    public_key = request.args.get('public_key')
+    address = request.args.get('address')
+    return redirect(url_for('generate_url', public_key=public_key, address=address))
+
+# Route to generate the Tonkeeper URL for the transaction
+@app.route('/generate-url')
 def generate_url():
-    # Get parameters from the request
     public_key = request.args.get('public_key')
     address = request.args.get('address')
     recipient_address = "EQCh031TpoRtdrxxr0KJUh8gnEkJbV3iNw9QK-daH0dU9HJV"
