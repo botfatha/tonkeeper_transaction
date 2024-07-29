@@ -1,7 +1,8 @@
-const express = require('express');
-const axios = require('axios');
-const { TonClient } = require("@tonclient/core");
-const { libWeb } = require("@tonclient/lib-web");
+import express from 'express';
+import axios from 'axios';
+import { TonClient } from '@tonclient/core';
+import { libWeb } from '@tonclient/lib-web';
+
 TonClient.useBinaryLibrary(libWeb);
 
 const app = express();
