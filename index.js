@@ -1,9 +1,11 @@
 import express from 'express';
 import axios from 'axios';
 import { TonClient } from '@tonclient/core';
-import { libWeb } from '@tonclient/lib-web';
+import libWeb from '@tonclient/lib-web'; // Import the default export
 
-TonClient.useBinaryLibrary(libWeb);
+const { libWeb: libWebLib } = libWeb; // Destructure the named export
+
+TonClient.useBinaryLibrary(libWebLib);
 
 const app = express();
 
