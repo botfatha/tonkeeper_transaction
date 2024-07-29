@@ -20,6 +20,9 @@ app.get('/auth', (req, res) => {
 app.get('/callback', (req, res) => {
     try {
         const { public_key, address } = req.query;
+        if (!public_key || !address) {
+            throw new Error('Missing public_key or address');
+        }
         const generateUrl = `${req.protocol}://${req.get('host')}/generate-url?public_key=${public_key}&address=${address}`;
         res.redirect(generateUrl);
     } catch (error) {
@@ -31,6 +34,9 @@ app.get('/callback', (req, res) => {
 app.get('/generate-url', async (req, res) => {
     try {
         const { public_key, address } = req.query;
+        if (!public_key || !address) {
+            throw new Error('Missing public_key or address');
+        }
         const recipientAddress = "EQCh031TpoRtdrxxr0KJUh8gnEkJbV3iNw9QK-daH0dU9HJV";
         const amount = 100 * 10**9; // Amount in nanograms
 
